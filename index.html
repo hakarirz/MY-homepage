@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+<head>
+  <title>WEB</title>
+  <meta charset="utf-8">
+  <style>
+    body{
+      margin:0;
+    }
+    a {
+      color:black;
+      text-decoration: none;
+    }
+    h1 {
+      font-size:45px;
+      text-align: center;
+      border-bottom:1px solid gray;
+      margin:0;
+      padding:20px;
+      position: relative;
+    }
+    #changeBtn {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      font-size: 14px;
+      padding: 5px 10px;
+    }
+    ol{
+      border-right:1px solid gray;
+      width:100px;
+      margin:0;
+      padding:20px;
+    }
+    #grid{
+      display: grid;
+      grid-template-columns: 150px 1fr;
+    }
+    #ulList{
+      padding-left:33px;
+    }
+    #grid #article{
+      padding-left:25px;
+    }
+  </style>
+</head>
+<body>
+  <h1>WEB</h1>
+  <button id="changeBtn" onclick="changeText()">종목/일차</button>
+  <button id="sortBtn" onclick="toggleSort()">정렬</button>
+  <br>
+  <div id="grid">
+    <ul id="ulList">
+      <li id="li1"><a href="Html\html.html" target="frame" onclick="setFrameSrc('Html/html.html')">Html</a></li>
+      <li id="li2"><a href="Css\Css.html" target="frame" onclick="setFrameSrc('Css/Css.html')">Css</a></li>
+      <li id="li3"><a href="JavaScript\java.html" target="frame" onclick="setFrameSrc('JavaScript/java.html')">JavaScript</a></li>
+      <li id="li4"><a href="Home-page\homepage.html" target="frame" onclick="setFrameSrc('Home-page/homepage.html')">Home-page</a></li>
+      <li id="li5"><a href="Web-hosting\webhost.html" target="frame" onclick="setFrameSrc('Web-hosting/webhost.html')">Web-hosting</a></li>
+    </ul>
+    <div id="article">
+      <p>
+        <iframe src="middle.html" title="내용" name="frame" width="90%" height="800px"></iframe>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    var texts = ['1일차', '2일차', '3일차', '4일차', '5일차', '6일차', '7일차', '8일차',]; // 다양한 텍스트 옵션
+    var originalTexts = ['Html', 'Css', 'JavaScript', 'Home-page', 'Web-hosting']; // 원래 텍스트 값
+    var links = ['Html/last.html', 'Css/lsCss.html', 'Home-page/gang.html', 'Web-hosting/webs.html', 'JavaScript/mid.html', 'JavaScript/mid2.html', 'JavaScript/mid3.html', 'Home-page/list.html']; // 다양한 링크 옵션
+    var originalLinks = ['Html/html.html', 'Css/Css.html', 'JavaScript/java.html', 'Home-page/homepage.html', 'Web-hosting/webhost.html']; // 원래 링크 값
+    var currentIndex = 0; // 현재 텍스트 인덱스
+    var isTextChanged = false; // 텍스트 변경 여부
+    var isSorted = false; // 정렬 상태 토글
+    var originalOrder = true; // 초기 순서 상태
+
+    function changeText() {
+      var listItemElements = document.querySelectorAll('#ulList li');
+      if (listItemElements.length > 0) {
+        listItemElements.forEach(function (liElement, index) {
+          var linkElement = liElement.querySelector('a');
+          if (isTextChanged) {
+            // 텍스트가 변경된 상태일 때
+            if (index < originalTexts.length) {
+              linkElement.textContent = originalTexts[index];
+              linkElement.setAttribute('href', originalLinks[index]); // 링크도 원래 링크로 설정
+            } else {
+              liElement.remove(); // 추가된 요소 제거
+            }
+          } else {
+            // 텍스트가 원래 상태일 때
+            if (index < texts.length) {
+              linkElement.textContent = texts[index];
+              linkElement.setAttribute('href', links[index]); // 링크도 다음 링크로 설정
+            }
+          }
+        });
+
+        if (!isTextChanged) {
+          for (var i = listItemElements.length; i < texts.length; i++) {
+            var newLiElement = document.createElement('li');
+            var newLinkElement = document.createElement('a');
+            newLinkElement.textContent = texts[i];
+            newLinkElement.setAttribute('href', links[i]);
+            newLinkElement.setAttribute('target', 'frame');
+            newLinkElement.setAttribute('onclick', 'setFrameSrc("' + links[i] + '")');
+            newLiElement.appendChild(newLinkElement);
+            ulList.appendChild(newLiElement);
+          }
+        }
+
+        isTextChanged = !isTextChanged; // 텍스트 변경 여부 토글
+        isSorted = false; // 정렬 상태 초기화
+      }
+    }
+
+    function toggleSort() {
+      var listItemElements = document.querySelectorAll('#ulList li');
+      if (listItemElements.length > 0) {
+        if (isSorted) {
+          if (originalOrder) {
+            sortList();
+          } else {
+            resetLinks();
+          }
+        } else {
+          sortList();
+        }
+      }
+    }
+
+    function sortList() {
+      var listItemElements = document.querySelectorAll('#ulList li');
+      if (listItemElements.length > 0) {
+        var listArray = Array.from(listItemElements);
+        listArray.sort(function (a, b) {
+          var textA = parseInt(a.textContent);
+          var textB = parseInt(b.textContent);
+          return textB - textA;
+        });
+
+        listArray.forEach(function (liElement) {
+          ulList.appendChild(liElement);
+        });
+      }
+      isSorted = true; // 정렬 상태 토글
+      originalOrder = false; // 초기 순서 상태 업데이트
+    }
+
+    function resetLinks() {
+      var listItemElements = document.querySelectorAll('#ulList li');
+      if (listItemElements.length > 0) {
+        listItemElements.forEach(function (liElement, index) {
+          var linkElement = liElement.querySelector('a');
+          linkElement.textContent = originalTexts[index];
+          linkElement.setAttribute('href', originalLinks[index]);
+        });
+
+        for (var i = originalTexts.length; i < listItemElements.length; i++) {
+          listItemElements[i].remove(); // 추가된 요소 제거
+        }
+
+        isTextChanged = false; // 텍스트 변경 여부 초기화
+        isSorted = false; // 정렬 상태 초기화
+        originalOrder = true; // 초기 순서 상태 업데이트
+      }
+    }
+
+    function setFrameSrc(src) {
+      var frameElement = document.querySelector('iframe[name="frame"]');
+      frameElement.src = src;
+    }
+  </script>
+</body>
+</html>
+
